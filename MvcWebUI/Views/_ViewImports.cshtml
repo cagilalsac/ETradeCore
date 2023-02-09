@@ -1,0 +1,11 @@
+﻿@using MvcWebUI
+@using MvcWebUI.Models
+
+@using Business.Models
+@* View'larda kullanacağımız model objelerinin tiplerini direkt class adı üzerinden belirtebilmek için eklenmelidir. *@
+
+@using MvcWebUI.Settings
+@* İhtiyacımız olduğunda view'larda AppSettings class'ının static özelliklerini kullanabilmek için ekliyoruz. *@
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@* ASP.NET Core MVC projelerinde Tag Helper'ların kullanımını sağlar. *: tüm Tag Helper'ları kullan demektir, istenirse Tag Helper'lar tek tek de belirtilebilir. *@

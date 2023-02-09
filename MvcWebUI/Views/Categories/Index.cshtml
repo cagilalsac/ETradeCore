@@ -1,0 +1,69 @@
+﻿@model IEnumerable<CategoryModel>
+@*Model namespace using directive should be added to _ViewImports.cshtml.*@
+
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+
+@if (User.IsInRole("Admin"))@* kullanıcı Admin rolündeyse Create link'ini gösteriyoruz *@
+{
+    <p>
+        <a asp-action="Create"><i class="bi bi-plus-lg"></i> Create New Category</a>
+    </p>
+}
+
+@if (TempData["Message"] is not null)
+{
+    <p class="bg-warning text-danger">@TempData["Message"]</p>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductsCount)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+		@foreach (var item in Model) {
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.Name)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.ProductsCount)
+				</td>
+				<td style="text-align: right;"><!-- td içerisindeki elemanları sağa hizala -->
+                @if (User.Identity.IsAuthenticated)// eğer kullanıcı giriş yaptıysa Details link'i mutlaka gösterilsin
+                {
+                    <a asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-info-circle"></i> Details</a>
+                    @if (User.IsInRole("Admin")) // eğer kullanıcı Admin rolündeyse Edit ve Delete link'leri de gösterilsin
+                    {
+                        @:&nbsp;|&nbsp;
+                        @* @: Razor escape sequence *@
+                        <a asp-action="Edit" asp-route-id="@item.Id"><i class="bi bi-pencil-square"></i> Edit</a>
+                        @:&nbsp;|&nbsp;
+                        <a asp-action="Delete" asp-route-id="@item.Id"><i class="bi bi-trash"></i> Delete</a>
+                        <!--
+                            Tag Helper'lar üzerinden eğer bir controller aciton'ına parametre olarak veri gönderilmek isteniyorsa asp-route
+                            üzerinden istenilen bir isim kullanılıp istenilen değere ataması yapılır.
+                            Burada asp-route'dan sonra id ismini biz tanımladık çünkü Details, Edit ve Delete action'ları int tipinde bir id parametresi kullanıyor.
+                        -->
+                    }
+                }
+                </td>
+			</tr>
+		}
+    </tbody>
+</table>
+
+
+

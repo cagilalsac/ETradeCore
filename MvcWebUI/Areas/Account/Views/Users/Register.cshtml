@@ -1,0 +1,275 @@
+﻿@using DataAccess.Enums;
+@* Sex enum'ını sadece burada kullanacağımızdan Views -> _ViewImports.cshtml içerisine yazmayı tercih etmedik *@
+
+@model AccountRegisterModel
+@*Model namespace using directive should be added to _ViewImports.cshtml.*@
+
+@* 
+	Area'lar projenin Views klasörü altındaki _ViewImports ve _ViewStart view'larını kullanmamaktadır bu yüzden
+	projenin Views klasörü altındaki _ViewImports ve _ViewStart view'ları örneğin burada olduğu gibi Areas -> Account -> Views
+	altına kopyalanırsa bu area'daki view'ların bu _ViewImports ve _ViewStart view'larındaki kodları kullanmaları sağlanabilir.
+*@
+
+@{
+    ViewData["Title"] = "Register New User";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<div class="row">
+    <div class="offset-4 col-8">
+        <form asp-action="Register">
+		@Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="row mb-3">
+                <label asp-for="UserName" class="col-2 col-form-label"></label>
+				<div class="col-4">
+					<input asp-for="UserName" class="form-control" />
+					<span asp-validation-for="UserName" class="text-danger"></span>
+				</div>
+            </div>
+            <div class="row mb-3">
+                <label asp-for="Password" class="col-2 col-form-label"></label>
+				<div class="col-4">
+
+					<input asp-for="Password" class="form-control" type="password" id="password" />
+					@* bu input'un type attribute'u password yapılmalıdır ki şifre kapalı bir şekilde girilebilsin *@
+
+					<span asp-validation-for="Password" class="text-danger"></span>
+				</div>
+
+				<!-- Şifre gösterme ve gizleme: -->
+				<div class="col-5">
+					<a id="showhidepassword" href="#" title="Show / Hide Password">Show / Hide Password</a>
+					<!-- a tag'i ile href attribute'u "#" veya "" atanarak link'in herhangi bir adrese yönlendirme yapmaması sağlanabilir  -->
+				</div>
+
+            </div>
+			<div class="row mb-3">
+                <label asp-for="ConfirmPassword" class="col-2 col-form-label"></label>
+				<div class="col-4">
+					<input asp-for="ConfirmPassword" class="form-control" type="password" id="confirmpassword" />
+					<span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+				</div>
+
+				<!-- Şifre onay gösterme ve gizleme: -->
+				<div class="col-5">
+					<a id="showhideconfirmpassword" href="" title="Show / Hide Confirm Password">Show / Hide Confirm Password</a>
+					<!-- a tag'i ile href attribute'u "#" veya "" atanarak link'in herhangi bir adrese yönlendirme yapmaması sağlanabilir  -->
+				</div>
+
+            </div>
+
+			<!-- Aşağıdaki Tag Helper'larda view model'inin UserDetail özelliği üzerinden Sex, Email, Phone, CountryId, CityId ve Address özelliklerini kullandık -->
+			<div class="row mb-3">
+				<label asp-for="UserDetail.Sex" class="col-2 col-form-label"></label>
+				<div class="col-4 pt-2"><!-- pt: Bootstrap 5 padding top, 2: iki birim -->
+					
+					@* Radio button'lar için 1. yöntem: HTML Helpers: *@
+					@*<div class="form-check-inline">
+						@Html.RadioButtonFor(m => m.UserDetail.Sex, (int)Sex.Woman, new { @class = "form-check-input", id = "woman" }) @Html.Label("woman", Sex.Woman.ToString(), new { @class = "form-check-label" })
+					</div>
+					<div class="form-check-inline">
+						@Html.RadioButtonFor(m => m.UserDetail.Sex, (int)Sex.Man, new { @class = "form-check-input", id = "man" }) @Html.Label("man", Sex.Man.ToString(), new { @class = "form-check-label" })
+					</div>*@
+
+					@* Radio button'lar için 2. yöntem: Tag Helpers: *@
+					<div class="form-check-inline">
+						<input asp-for="UserDetail.Sex" type="radio" value="@((int)Sex.Woman)" checked class="form-check-input" id="woman" /> <label for="woman" class="form-check-label">@Sex.Woman</label>
+					</div>
+					<div class="form-check-inline">
+						<input asp-for="UserDetail.Sex" type="radio" value="@((int)Sex.Man)" class="form-check-input" id="man" /> <label for="man" class="form-check-label">@Sex.Man</label>
+					</div>
+
+				</div>
+            </div>
+			<div class="row mb-3">
+				<label asp-for="UserDetail.Email" class="col-2 col-form-label"></label>
+				<div class="col-4">
+					<input asp-for="UserDetail.Email" class="form-control" />
+					<span asp-validation-for="UserDetail.Email" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label asp-for="UserDetail.Phone" class="col-2 col-form-label"></label>
+				<div class="col-4">
+					<input asp-for="UserDetail.Phone" class="form-control" />
+					<span asp-validation-for="UserDetail.Phone" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label asp-for="UserDetail.CountryId" class="col-2 col-form-label"></label>
+				<div class="col-4">
+					<select asp-for="UserDetail.CountryId" class="form-select" asp-items="ViewBag.Countries" id="countries">
+						<option value="">-- Select Country --</option>
+					</select>
+					<span asp-validation-for="UserDetail.CountryId" class="text-danger countriesmessage"></span>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label asp-for="UserDetail.CityId" class="col-2 col-form-label"></label>
+				<div class="col-4">
+					<select asp-for="UserDetail.CityId" class="form-select" asp-items="ViewBag.Cities" id="cities">
+						<option value="">-- Select Country --</option>
+					</select>
+					<span asp-validation-for="UserDetail.CityId" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label asp-for="UserDetail.Address" class="col-2 col-form-label"></label>
+				<div class="col-4">
+					<textarea asp-for="UserDetail.Address" class="form-control" rows="3"></textarea>
+					<span asp-validation-for="UserDetail.Address" class="text-danger"></span>
+				</div>
+			</div>
+            <div class="row mb-3">
+				<div class="offset-2 col-4">
+					<input type="submit" value="Register" class="btn btn-success" />
+				</div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+
+	<script src="/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+	@*
+		Eğer bir web sayfasında yapılmak istenen işlem dışında (örneğin bu sayfada kullanıcı verilerinin girilip kaydedilmesi)
+		başka bir işleme ihtiyaç varsa (örneğin bu sayfada ülke değişikliğine göre şehirlerin doldurulması) AJAX
+		(Asynchronous Javascript and XML) kullanılır. 
+		AJAX Javascript üzerinden kullanılabildiği gibi jQuery üzerinden de daha kolay bir şekilde kullanılabilir.
+		AJAX kullanabilmek için mutlaka önce wwwroot -> lib altında Add -> Client-Side Library ile jquery-ajax-unobtrusive
+		aratılarak indirilmesi ve AJAX kullanılmak istenen sayfaya da script kaynağının (referansının) 
+		yukarıdaki şekilde eklenmesi gerekmektedir.
+	*@
+
+	<script>
+		$(function(){
+			//$("#woman").prop("checked", true); // Sex (cinsiyet) için HTML Radio Button Helper'ı kullanırsak Woman (kadın) seçeneğini işaretliyoruz
+
+
+
+			// AJAX (Asynchronous Javascript and XML) kullanılarak seçilen ülkeye göre şehirlerin doldurulması:
+			$("#countries").off("change"); 
+			// eğer istenirse countries id'sine sahip html elemanının (select) daha önce tanımlanmış event'i bu şekilde kaldırılabilir, 
+			// bazen bu event kaldırılmazsa sunucuya bu event üzerinden birden çok istek gönderilmesi durumu oluşabiliyor, 
+			// ilgili controller action'ına bir debug pointer konup bu durum uygulama Debug modunda çalıştırılarak test edilerek eğer birden çok
+			// bu break point'te web uygulaması duruyorsa bu action'a birden çok istek geliyor demektir, 
+			// böyle durumlarda event kaldırılıp tekrar eklenmelidir
+
+			$("#countries").change(function() { // ülkeler drop down list'inde seçim değiştiğinde çalışacak change event'i
+
+				$("#cities").empty(); // önce şehirler drop down list'indeki elemanları tamamen temizliyoruz ki seçili ülke id'ye göre tekrar doldurabilelim
+
+				$(".countriesmessage").text(""); // kullanıcı ülke seçmezse ülke seçiniz mesajını countriesmessage class'ına sahip span içerisinde yazdıracağız
+
+				var selectedCountryId = $("#countries").val(); // ülkeler drop down list'i üzerinden kullanıcının seçtiği ülkenin id'sini alıyoruz
+
+				if (selectedCountryId == "") { // eğer kullanıcının seçtiği option'ın value'su "" ise kullanıcı -- Select Country -- seçmiş demektir
+
+					$(".countriesmessage").text("Please select a country..."); // bu durumda kullanıcıya lütfen ülke seçiniz mesajını gösteriyoruz
+
+					$("#cities").append('<option value="">-- Select Country --</option>'); // daha önce elemanlarını boşalttığımız şehirler drop down list'inin sonuna ülke seçiniz option'ını ekliyoruz
+																						   // HTML elemanlarında attribute'ları " ile atadığımız için Javascript'te
+																						   // eğer burada olduğu gibi bir HTML elemanı oluşturulmak isteniyorsa
+																						   // string veri için " yerine ' kullanılması yazımı daha kolaylaştırır
+			
+				} else { // bu durumda kullanıcı ülke seçmiş demektir
+
+					$.getJSON( // jQuery'nin getJSON function'ı ile ilk parametre olarak url (unified resource locator) yani adresi,
+							   // ikinci parametre olarak veriyi Cities controller'ının GetCities action'ının parametresi olarak seçilen ülke id şeklinde göndererek
+							   // AJAX isteği sonucunu (controller action'ı üzerinden JSON formatında dönen sonuç) function içerisinde cities kolleksiyon değişkeni 
+							   // üzerinden alarak önce şehirler drop down list'ine şehir seçiniz option'ını, daha sonra da cities değişkeni üzerinden
+							   // dönen şehirleri bir döngü ile şehirler drop down list'ine option'lar olarak ekliyoruz,
+							   // $.getJSON methodu yerine $.ajax kullanılarak da AJAX isteklerinde bulunulabilir, en aşağıda örneğine bakılabilir 
+
+						"/Cities/GetCities",
+
+						{ countryId: selectedCountryId },
+
+						function(cities) {
+
+							$("#cities").append('<option value="">-- Select City --</option>');
+
+							for (const city of cities) { // şehirler kolleksiyonundaki her bir readonly şehir döngüsü
+
+								$("#cities").append('<option value="' + city.id + '">' + city.name + '</option>');
+								// örneğin ~/Cities/GetCities/1 adresi üzerinden JSON formatında dönen CityModel listesi tipindeki verinin 
+								// Id ve Name özellikleri küçük harfle başladığından buna dikkat ederek bu özelliklere ulaşmalıyız
+
+							}
+						}
+
+					);
+
+					//$.ajax({
+					//	cache: false, // istek sonucunun cache'den (tarayıcının saklama alanı) getirilmesini engeller, her zaman sunucudan sonucu çeker
+					//	url: "/Cities/GetCities", // istekte bulunulacak url (adres)
+					//	type: "get", // istekte bulunacağımız action'ın bir get veya post action'ı olacağını belirtir
+					//	dataType: "json", // örneğin ~/Cities/GetCities/1 çağrımı sonucunda dönecek veri formatının JSON olacağını belirtir
+					//	data: { countryId: selectedCountryId }, // istekle action'a gönderilecek countryId parametresi üzerinden veri
+					//	success: function(cities) { // eğer istek başarılı sonuç dönerse dönen yanıttaki veri cities kolleksiyonu olarak alınır
+					//		$("#cities").append('<option value="">-- Select City --</option>'); // önce şehir seçiniz option'ını ekliyoruz
+					//		for (const city of cities) { // sonra cities üzerinden dönen her bir readonly şehri option'lar olarak şehirler drop down list'inin sonuna ekliyoruz
+					//			$("#cities").append('<option value="' + city.id + '">' + city.name + '</option>');
+					//		}
+					//	},
+					//	error: function() { // isteğin başarısız sonucu dönmesi durumunda kullanıcıyı alert ile bilgilendiriyoruz veya tarayıcının console'una yazdırıyoruz
+					//		alert("An error occured during AJAX request!");
+					//		console.log("An error occured during AJAX request!");
+					//	}
+					//});
+
+				}
+
+			});
+
+
+
+			// Şifre ve şifre onay gösterme ve gizleme:
+			var showPassword = false; // link'a tıklandıkça güncellenecek global değişken
+			$(document).on('click', '#showhidepassword', function (event) { // showhidepassword id'sine sahip link'e tıklama event'i tanımlıyoruz
+																			// ve function'a event parametresini gönderiyoruz
+				event.preventDefault(); // a tag'inin default yönlendirme event'ini iptal ediyoruz ki sanki bir buton gibi çalışsın
+				showPassword = !showPassword; // daha önce atadığımız değişkeni her link'e tıklandığında değiliyle güncelliyoruz, 
+											  //mesela değişkenin ilk değeri burada false, link'e tıklandığında true olarak 
+											  // yine tıklandığında ise false olarak güncelliyoruz ve link'e tıklandıkça böyle devam edecek
+				if (showPassword) // eğer değişken true ise şifreyi göster demektir
+					$("#password").prop("type", "text"); // id'si password olan HTML input'una ulaşıp type attribute'unu şifreyi görebilmek için text yapıyoruz
+				else // eğer değişken false ise şifreyi gizle demektir
+					$("#password").prop("type", "password"); // id'si password olan HTML input'una ulaşıp type attribute'unu şifreyi gizleyebilmek için password yapıyoruz
+			});
+
+			// Şifre onay için de yukarıdaki adımları izliyoruz
+			var showConfirmPassword = false;
+			$(document).on('click', '#showhideconfirmpassword', function (event) {
+				event.preventDefault();
+				showConfirmPassword = !showConfirmPassword;
+				if (showConfirmPassword)
+					$("#confirmpassword").prop("type", "text");
+				else
+					$("#confirmpassword").prop("type", "password");
+			});
+		});
+	</script>
+
+
+
+	@*
+		ASP.NET Core MVC'de iki çeşit validation vardır:
+		1) Server-Side Validation: Yeni bir controller veya view eklenirken Reference script libraries işaretlenmezse view server side validation
+		yapacak şekilde oluşturulur. Yani kullanıcı form üzerinden submit butonuna tıkladığında veriler sunucuya gönderilir ve ilgili action'da
+		ModelState.IsValid ile valide edilip validasyon hatası varsa model tekrar view'e gönderilerek view'da varsa validation summary
+		veya validation message Tag veya HTML Helper'ları üzerinden bu validasyon hataları gösterilir. Tarayıcının sayfa başlığının da bulunduğu tab'ında
+		sayfanın sunucudan tekrar gönderildiği başlığın yanındaki icon'ın değişimi üzerinden takip edilebilir, ayrıca tarayıcının refresh (tazeleme)
+		butonunun çarpıya dönmesiyle de sayfanın sunucudan tekrar gönderildiği anlaşılabilir.
+		2) Client-Side Validation: Yeni bir controller veya view eklenirken Reference script libraries'in işaretlenmesiyle
+		aşağıdaki Views -> Shared -> _ValidationScriptsPartial.cshtml partial view'ı ilgili view'a aşağıdaki şekilde eklenir,
+		istenirse bu partial view sonradan da ilgili view'da bulunmuyorsa aşağıdaki şekilde eklenebilir. Bu partial view'in içerisindeki
+		Javascript referansları üzerinden tarayıcıda Javascript ile sunucuya veri gönderilmeden view'a gönderilen model üzerinden validation yapılır.
+	*@
+	<partial name="_ValidationScriptsPartial" />
+}
+
+

@@ -1,0 +1,32 @@
+﻿@model StoreModel
+@*Model namespace using directive should be added to _ViewImports.cshtml.*@
+
+@* Modal body'sinde gösterilecek partial view *@
+
+@using (Html.BeginForm()) @* form Tag Helper'ı yerine HTML Helper'ı kullandık çünkü HTML Helper'a parametre gönderilmediğinde
+                             form otomatik olarak çağrıldığı action'ın post methoduna verileri gönderir *@
+{
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="row mb-3">
+        <label asp-for="Name" class="col-2 col-form-label"></label>
+        <div class="col-5">
+            <input asp-for="Name" class="form-control name" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label asp-for="IsVirtual" class="col-2 col-form-label"></label>
+
+        <div class="col-5" style="padding-top: 7px;">
+            <input class="form-check-input isvirtual" asp-for="IsVirtual" />
+        </div>
+        <!-- Model IsVirtual özelliğinin tipi bool olduğu için Tag Helper check box input'u oluşturacaktır. -->
+
+    </div>
+    <div class="row mb-3">
+        <div class="offset-2 col-5">
+            <a href="#" class="btn btn-dark" onclick=saveStore();>Save</a>
+        </div>
+    </div>
+}

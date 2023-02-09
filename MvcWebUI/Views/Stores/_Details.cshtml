@@ -1,0 +1,20 @@
+﻿@model StoreModel
+@*Model namespace using directive should be added to _ViewImports.cshtml.*@
+
+@* Modal body'sinde gösterilecek partial view *@
+
+<dl class="row">
+    <dt class="col-2">
+        @Html.DisplayNameFor(model => model.Name)
+    </dt>
+    <dd class="col-10">
+        @Html.DisplayFor(model => model.Name)
+    </dd>
+    <dt class="col-2">
+        @Html.DisplayNameFor(model => model.VirtualDisplay)
+    </dt>
+    <dd class="col-10">
+        @Html.DisplayFor(model => model.VirtualDisplay)
+    </dd>
+</dl>
+            

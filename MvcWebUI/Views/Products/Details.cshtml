@@ -1,0 +1,36 @@
+﻿@model ProductModel
+
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+
+
+
+@if (TempData["Message"] is not null)
+{
+    <p class="text-danger">@TempData["Message"]</p>
+}
+
+
+
+@*
+    Ürün detayı hem Details hem de Delete view'larında ortak olacağı için bu kısmı _Details adında bir partial view'a aldık ve bu view'a gelen modeli
+    PartialAsync HTML Helper'ı üzerinden partial view'a gönderdik ki partial view içeriği PartialAsync HTML Helper'ı ile çağrıldığı yerde gösterilebilsin.
+    _Details partial view'ı sadece ürünlerle ilgili olacağı için Views -> Products klasörü altında oluşturduk.
+    Eğer tüm projede paylaşılan bir partial view olsaydı Views -> Shared klasörü altında oluşturacaktık.
+*@
+@await Html.PartialAsync("_Details", Model) @* asenkron methodların işlemi tamamlayabilmeleri için başlarına await (asynchronous wait) yazılır. *@
+
+
+
+<div>
+    @if (User.IsInRole("Admin")) // eğer kullanıcı Admin rolündeyse Edit link'ini gösteriyoruz
+    {
+        @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
+        @:&nbsp;|&nbsp;
+    }
+    @Html.ActionLink("Back to Products", "Index")
+</div>

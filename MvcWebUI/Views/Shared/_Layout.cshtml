@@ -1,0 +1,176 @@
+﻿<!-- Oluşturulan view'ların içinde gösterildiği tüm view'lar için ortak şablon view'ıdır. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" /><!-- Türkçe karakter gösterilecek sayfalarda genelde kullanılır. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><!-- Sayfanın Bootstrap responsive gösterim ayarları. -->
+    <title>@ViewData["Title"] | E-Trade</title><!-- View'larda ViewData veya ViewBag ile atanan Title'ın değeri burada sayfa başlığı olarak gösterilir. -->
+    
+    <!-- wwwroot klasöründeki CSS dosya referansları. -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- 
+        Bootstrap Icons: https://icons.getbootstrap.com 
+        MvcWebUI projesinde wwwroot -> lib klasörünü seçip fareye sağ tıklayarak Add -> Client-Side Library... menü elemanına fare ile sol tıklayarak
+        arama kısmında bootstrap-icons yazıp arama sonucunda gelen tüm dosyaları seçerek kütüphaneyi indiriyoruz, daha sonra kütüphanenin
+        css dosyasını aşağıdaki şekilde ekliyoruz.
+    -->
+    <link rel="stylesheet" href="/lib/bootstrap-icons/font/bootstrap-icons.min.css" />
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/MvcWebUI.styles.css" asp-append-version="true" /><!-- Projedeki tüm CSS dosyalarının minimize edilip oluşturulan ve tarayıcıya gönderilen tek CSS dosyası. -->
+
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark box-shadow"><!-- Bootstrap menü. -->
+            <div class="container-fluid"><!-- container Bootstrap class'ı: sağda ve solda belli bir miktar boşluk bırakır, container-fluid Bootstrap class'ı: tüm sayfayi genişlik olarak kaplar. -->
+                
+                <a class="navbar-brand text-warning" asp-area="" asp-controller="Home" asp-action="Index" title="@AppSettings.Title">
+
+                    <i class="bi bi-shop fs-3"></i>
+                    <!-- 
+                        Bootstrap icon'ları i tag'i ile web sitesindeki class tanımları üzerinden kullanılır. 
+                        fs-3: font size 3 birim.
+                    -->
+
+                </a>
+                <!-- 
+                    Sayfanın sol üst köşesindeki tıklandığında Home controller'ının Index action'ına yönlendiren link. 
+                    asp-area, asp-controller ve asp-action ASP.NET Core MVC'deki tag helper'lardandır.
+                    Tag helper'lar HTML tag'leri ile birlikte kolayca kullanılabilen ve asp- ile yazılan ve HTML tag'lerini oluşturmak için kullanılan bir kütüphanedir.
+                    Kullanabilmek için Views klasöründeki _ViewImports.cshtml dosyasına addTagHelper ile eklenmeleri gerekir.
+                -->
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <!-- Tarayıcının genişliği küçültüldüğünde veya mobil ekranda sayfa görüntülendiğinde menünün bir butona tıklanarak açılıp kapanmasını sağlar. -->
+
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between ps-5"><!-- ps-5: padding-left 5 birim -->
+                    <ul class="navbar-nav flex-grow-1 ms-5"><!-- ms-5: margin-left 5 birim -->
+
+                        @if (AppCore.App.Environment.IsDevelopment)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-danger" asp-area="Database" asp-controller="Home" asp-action="Index"><i class="bi bi-exclamation-circle fs-6"></i> Seed Database</a>
+                                <!-- 
+                                Development ortamında kullanılacak ilk verilerin sıfırdan oluşturulmasını sağlayan link. 
+                                Bu işlem Areas -> Database altındaki Database adındaki bir area tanımlanmış controller'ın action'ında gerçekleştirildiğinden
+                                asp-area mutlaka Database olarak belirtilmelidir.
+                                Projenin Controllers klasöründeki controller action'larına yönlendiren link'lerde asp-area="" olarak yazılır.
+                                -->
+                            </li>
+                        }
+
+                        
+                        <li class="nav-item"><!-- Menü elemanı. -->
+                            <a class="nav-link text-white" asp-area="" asp-controller="Products" asp-action="Index"><i class="bi bi-card-list fs-6"></i> Products</a>
+                            <!-- Tıklandığında Products controller'ının Index action'ına yönlendirecek Ürünler link'i. -->
+                        </li>
+                        <li class="nav-item"><!-- Menü elemanı. -->
+                            <a class="nav-link text-white" asp-area="" asp-controller="Categories" asp-action="Index"><i class="bi bi-list-ul fs-6"></i> Categories</a>
+                            <!-- Tıklandığında Categories controller'ının Index action'ına yönlendirecek Kategoriler link'i. -->
+                        </li>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item"><!-- Menü elemanı. -->
+                                <a class="nav-link text-white" asp-area="" asp-controller="Stores" asp-action="Index"><i class="bi bi-list-ul fs-6"></i> Stores</a>
+                                <!-- Tıklandığında Stores controller'ının Index action'ına yönlendirecek Mağazalar link'i. -->
+                            </li>
+                        }
+                    </ul>
+
+                    <!-- aşağıdaki div ve ul class'ları üzerinden bu kısım menüde en sağ tarafta gelecektir -->
+                    <div class="navbar-text">
+                        <ul class="navbar-nav me-auto">
+                            @if (User.Identity.IsAuthenticated) // Login aksiyonu sonucunda oluşan cookie'deki kullanıcı bilgilerine User objesi üzerinden ulaşılabilir,
+                                                                // eğer kullanıcı login olduysa yani cookie'si varsa
+                            {
+                                <li class="nav-item divusername"><!-- Menü elemanı, divusername class'ını wwwroot -> css -> site.css dosyasında oluşturduk -->
+                                    <span class="badge bg-info text-black"><i class="bi bi-person fs-6"></i>@User.Identity.Name</span><!-- badge: Bootstrap 5 Badge -->
+                                </li>
+                                <li class="nav-item"><!-- Menü elemanı. -->
+                                    <a class="nav-link text-info" asp-area="Account" asp-controller="Users" asp-action="Logout"><i class="bi bi-box-arrow-right fs-6"></i> Logout</a>
+                                    <!-- Tıklandığında Account area'sındaki Users controller'ının Logout action'ına yönlendirecek Çıkış link'i. -->
+                                </li>
+                            }
+                            else // eğer kullanıcı login olmadıysa yani cookie'si yoksa
+                            {
+                                <li class="nav-item"><!-- Menü elemanı. -->
+                                    <a class="nav-link text-info" asp-area="Account" asp-controller="Users" asp-action="Register"><i class="bi bi-person-plus fs-6"></i> Register</a>
+                                    <!-- Tıklandığında Account area'sındaki Users controller'ının Register action'ına yönlendirecek Kayıt link'i. -->
+                                </li>
+                                <li class="nav-item"><!-- Menü elemanı. -->
+                                    <a class="nav-link text-info" asp-area="Account" asp-controller="Users" asp-action="Login"><i class="bi bi-box-arrow-in-right fs-6"></i> Login</a>
+                                    <!-- Tıklandığında Account area'sındaki Users controller'ının Login action'ına yönlendirecek Giriş link'i. -->
+                                </li>
+                            }
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid">
+        <main role="main" class="pb-3">
+            <div class="row">
+
+                <div class="col-1 bg-dark pb-3 d-none d-xl-block colleftlayout">
+                <!-- d-none: HTML elemanını tüm ekran genişlikleri için gizle, d-xl-block: sadece extra large ekran genişliğinde HTML elemanını göster -->
+
+                    <ul class="nav flex-column">
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="Report" asp-controller="Home" asp-action="Index"><i class="bi bi-file-spreadsheet fs-6"></i> Report</a>
+                            </li>
+                        }
+                        else if (User.IsInRole("User"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="Cart" asp-controller="Home" asp-action="GetCart"><i class="bi bi-cart fs-6"></i> Cart</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-11 pb-3 colrightlayout">
+                <!-- extra small, small, medium, large ekran genişlikleri için div 12 birim olsun, extra large ekran genişliği için 11 birim olsun -->
+
+                    @RenderBody()
+                    @*
+                        Oluşturduğumuz view'lar bu method ile layout içerisinde istenilen bir alanda gösterilir.
+                        Tüm view'lar için ortak layout Views klasöründeki _ViewStart.cshtml dosyasında ayarlanabilir.
+                        Eğer bir view farklı bir layout kullanacaksa, örneğin yeni layout dosya adı _MyLayout.cshtml olsun, o zaman view'ın en üstünde
+                        @{
+                            Layout = "_MyLayout";
+                        }
+                        şeklinde tanımlanabilir.
+                        Tüm proje için layout gibi ortak kullanılacak view dosyaları Views -> Shared klasöründe oluşturulmalıdır.
+                    *@
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer text-muted"><!-- Sayfanın en altında istenilirse kullanılabilecek footer kısmı. -->
+        <div class="container-fluid">
+            <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-dark">&copy; @DateTime.Now.Year | E-Trade. All rights reserved.</a>
+        </div>
+    </footer>
+
+    <!-- wwwroot klasöründeki Javascript dosya referansları. -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- View'larda ihtiyaca göre oluşturulan Scripts adındaki section'ları (bölüm) buraya yazdırır. -->
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

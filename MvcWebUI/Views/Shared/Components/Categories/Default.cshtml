@@ -1,0 +1,32 @@
+﻿@model List<CategoryModel>
+
+<h5>Categories</h5>
+<hr />
+
+@if (Model is not null && Model.Count > 0) // eğer kategoriler null değilse ve içerisinde eleman varsa
+{
+    <ul class="navbar-nav">
+        <li>
+            <a asp-area="Report" asp-controller="Home" asp-action="Index">All Categories</a>
+            <!-- 
+                route üzerinden herhangi bir CategoryId göndermiyoruz ki kategori id'ye göre filtreleme yapılmadan 
+                tüm kategoriler için rapor gelsin 
+            -->
+        </li>
+        @foreach (var category in Model)
+        {
+            <li>
+                <a asp-area="Report" asp-controller="Home" asp-action="Index" asp-route-Filter.CategoryId="@category.Id">@category.Name</a>
+                <!--
+                    route üzerinden Report -> Models -> HomeIndexViewModel içerisindeki Filter referans özelliği CategoryId
+                    özelliğini barındırdığından ve Report -> Home controller -> Index action'ında parametre olarak HomeIndexViewModel
+                    tipini kullandığımızdan Filter.CategoryId ile her turdaki kategorinin id'sini action'a gönderiyoruz
+                -->
+            </li>
+        }
+    </ul>
+}
+else // eğer kategoriler null ise veya içerisinde eleman yoksa
+{
+    <p class="text-danger">No categories found.</p><!-- kategori bulunamadı mesajını yazdırıyoruz -->
+}

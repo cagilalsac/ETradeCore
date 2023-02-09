@@ -1,0 +1,55 @@
+﻿@model IEnumerable<CartItemModel>
+
+@{
+    ViewData["Title"] = "Cart";
+}
+
+<h1>Cart</h1>
+
+<p>
+    <a asp-action="ClearCart"><i class="bi bi-cart-x-fill fs-5"></i> Clear Cart</a><!-- sepeti temizleme link'i -->
+</p>
+
+@if (TempData["Message"] is not null)
+{
+    <p class="text-success">@TempData["Message"]</p>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnitPrice)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+                <td>
+                    @item.UnitPrice.ToString("C2") 
+                    @* 
+                        view'larda bu şekilde veri formatlama tercih edilmemelidir, veri formatlama modelde ekstra string tipinde 
+                        bir özellik üzerinden yapılıp view'da bu özellik kullanılmalıdır 
+                    *@
+                </td>
+                <td>
+                    <!-- 
+                        sepetten eleman silme link'i,
+                        sepetten eleman silme işlemini yapabilmek için RemoveFromCart action'ına ProductId'yi 
+                        route value üzerinden parametre olarak gönderiyoruz
+                    -->
+                    <a asp-action="RemoveFromCart" asp-route-productId="@item.ProductId"><i class="bi bi-cart-dash fs-5"></i> Remove from Cart</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,166 @@
+﻿@model IEnumerable<StoreModel>
+@*Model namespace using directive should be added to _ViewImports.cshtml.*@
+
+@{
+    ViewData["Title"] = "Stores";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<p>
+    <!-- Bootstrap 5 Modal: -->
+    <a href="#" class="showmodallink text-dark" data-target="/Stores/Create"><i class="bi bi-plus-lg"></i> Create New Store</a>
+</p>
+
+@if (TempData["Message"] is not null)
+{
+    <p class="text-secondary"><b>@TempData["Message"]</b></p>
+}
+
+<!-- 
+    eğer içerisinde çok fazla veri bulunan bir tablo üzerinden sayfada scroll işlemi yapmak yerine tablo üzerinde scroll işlemi yapılsın isteniyorsa
+    tablo aşağıdaki div içerisine alınmalıdır
+-->
+<div style="overflow-y:auto; height:400px;">
+    <table class="table table-dark table-hover">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.VirtualDisplay)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.VirtualDisplay)
+                    </td>
+                    <td style="text-align: right;"><!-- td içerisindeki elemanları sağa hizala -->
+                        <!-- Bootstrap 5 Modal: -->
+                        <a href="#" class="showmodallink text-info" data-target="/Stores/Details/@item.Id"><i class="bi bi-info-circle"></i> Details</a>&nbsp;|&nbsp;
+                        <a href="#" class="showmodallink text-white" data-target="/Stores/Edit/@item.Id"><i class="bi bi-pencil-square"></i> Edit</a>&nbsp;|&nbsp;
+
+
+
+                        <!-- 
+                            AlertifyJS Üzerinden Kayıt Silme:
+                            Silme işlemi için link'i Tag Helper olarak değil onclick event'ini tanımlayacağımız bir a HTML tag'i olarak oluşturuyoruz.
+                        -->
+                        <a href="#" class="text-warning" onclick="deleteStore(@item.Id);"><i class="bi bi-trash"></i> Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+<!-- Bootstrap 5 Modal: -->
+<div class="modal">
+    <div class="modal-lg modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Store</h5>
+                <button type="button" class="btn-close closemodalbutton" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Dinamik olarak sunucudan dönen partial view'lar üzerinden doldurulacak -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary closemodalbutton">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @*
+        AlertifyJS Üzerinden Kayıt Silme:
+        Mağaza silmek için ilgili mağazanın Delete link'i tıklandığında mağazanın id'sini aşağıdaki deleteStore fonksiyonuna
+        parametre olarak gönderiyoruz ve AlertifyJS (https://alertifyjs.com) üzerinden bir konfirmasyon pop up'ının çıkmasını sağlıyoruz.
+        Eğer kullanıcı evet derse o zaman Stores controller'ındaki Delete get action'ına silinmek istenen mağazanın id'sini route değeri olarak ekleyip
+        Javascript'te bir sayfanın yönlendirilmesini sağlayan window.location.href'e atıyoruz.
+    *@
+
+    <link href="/lib/AlertifyJS/css/alertify.min.css" rel="stylesheet" />
+    <script src="/lib/AlertifyJS/alertify.min.js"></script>
+
+    <script>
+        function deleteStore(id) {
+            alertify.confirm(
+                "Warning!", // pop up'ın başlığı
+                "Are you sure you want to delete this store?", // pop up'taki mesaj
+                function () { // kullanıcı Yes butonuna tıkladığında çalışacak fonksiyon
+                    window.location.href = "/Stores/Delete/" + id; // silme işlemi için yönlendirdiğimiz Stores controller'ın Delete get action'ı
+                },
+                function () { // kullanıcı No butonuna tıkladığında çalışacak fonksiyon
+                    //alertify.error("Delete canceled."); // eğer istenirse error fonksiyonu üzerinden hata mesajı, success fonksiyonu üzerinden de
+                                                          // başarılı mesajı kullanıcıya gösterilebilir, burada mesaj göstermeyelim dedik
+                }
+            ).set('labels', { ok: 'Yes', cancel: 'No' }); // pop up'taki butonların Yes ve No şeklinde özelleştirilmeleri
+        }
+    </script>
+
+
+
+    @* Bootstrap 5 Modal: *@
+    <script>
+        $(function () {
+            $(".showmodallink").click(function(event) { // showmodallink class'lı link'e tıklandığında
+                event.preventDefault(); // link'in default yönlendirme event'ini iptal ediyoruz
+                var route = $(this).data("target"); // a tag'inin data-target attribute'u üzerinden get isteğinde bulunacağımız
+                                                    // controller/action/id route'unu alıyoruz
+                $.get(route, function () { // bu route üzerinden sunucuya bir get isteğinde bulunuyoruz
+
+                })
+                .done(function (partialView) { // eğer sunucudan başarılı sonucu dönerse
+                    $(".modal .modal-body").html(partialView); // gelen partialView verisini modal class'lı div içerisindeki
+                                                               // modal-body class'lı div'in içerisine dolduruyoruz
+                })
+                .fail(function (response) { // eğer sunucudan başarısız sonucu (not found) dönerse
+                    $(".modal .modal-body").html('<span class="text-danger">' + response.responseText + '</span>'); // sunucudan dönen yanıt üzerinden
+                                                                                                                    // gelen hata mesajını modal class'lı
+                                                                                                                    // div içerisindeki modal-body
+                                                                                                                    // class'lı div'in içerisine yazdırıyoruz
+                });
+                $(".modal").show(); // sonra da modal'ı gösteriyoruz
+            });
+
+            $(".closemodalbutton").click(function() { // closemodalbutton class'ına sahip buton tıklandığında
+                $(".modal").hide(); // modal'ı gizliyoruz
+            });
+        });
+
+        function saveStore() { // modal üzerinden açılan yeni ve düzenle form'larında Save link'ine tıklandığında
+            var route = $("form").attr("action"); // yeni ve düzenle form'larının içlerindeki veriyi submit edeceği action attribute'u
+                                                  // üzerinden controller/action route'unu alıyoruz
+            var data = $("form").serialize(); // form'lardaki alanlar üzerinden girilen verileri serialize ederek bu alanlar üzerinden
+                                              // bir string oluşturuyoruz ve data'ya atıyoruz (örnek: Name=Teknosa&IsVirtual=false)
+            $.post(route, data, function() { // aldığımız route ve data üzerinden sunucuya bir post isteğinde bulunuyoruz
+
+            })
+            .done(function (partialView) { // eğer sunucudan başarılı sonucu dönerse gelen partialView verisini modal class'lı div içerisindeki
+                                           // modal-body class'lı div'in içerisine dolduruyoruz
+                if (partialView == "") // eğer sunucudan dönen partialView yanıtı "" ise sunucudan Ok methodu dönülmüş demektir
+                    window.location.href = "/Stores/Index"; // işlem başarılı olduğu için Javascript ile Stores/Index'e yönlendiriyoruz
+                else // eğer sunucudan dönen partialView yanıtı boş değilse bu durumda validasyon hatası var demektir
+                    $(".modal .modal-body").html(partialView); // işlem başarısız olduğu için partial view'ı modal içerisine dolduruyoruz
+            })
+            .fail(function () { // eğer sunucudan başarısız sonucu dönerse hata mesajını modal class'lı div içerisindeki 
+                                        // modal-body class'lı div'in içerisine yazdırıyoruz
+                $(".modal .modal-body").html('<span class="text-danger">An error occured!</span>');
+            });
+        }
+    </script>
+}

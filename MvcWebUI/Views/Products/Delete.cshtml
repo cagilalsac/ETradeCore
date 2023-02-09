@@ -1,0 +1,40 @@
+﻿@model ProductModel
+@*Model namespace using directive should be added to _ViewImports.cshtml.*@
+
+@{
+    ViewData["Title"] = "Delete Existing Product";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    
+
+
+    <partial name="_Details" model="Model" />
+    <!--
+        Ürün detayını gösterebilmek için daha önce oluşturduğumuz _Details.cshtml partial view'ını burada partial Tag Helper'ını 
+        kullanarak ve ProductModel tipindeki modeli göndererek gösteriyoruz.
+    -->
+    
+
+        
+    <form asp-action="Delete">
+	@Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Yes" class="btn btn-danger" />&nbsp;&nbsp;
+        <a asp-action="Index" class="btn btn-success">No</a>
+    </form>
+    <!--
+        Kullanıcı Yes submit butonuna bastığında form kullanarak hidden olarak tanımlanmış Id verisini controller'ın Delete action'ına
+        parametre olarak gönderiyoruz ki ilgili kayıt id üzerinden silinebilsin.
+        Kullanıcı kaydı silmekten vazgeçip No butonuna tıklarsa controller'ın listeleme yapan Index action'ına yönlendiriyoruz.
+    -->
+
+
+
+</div>
+
+
+

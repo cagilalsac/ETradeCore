@@ -1,0 +1,275 @@
+﻿@model ProductModel 
+@* Bu view'da veriler ProductModel üzerinden alınacak ve ProductsController'daki Create post aksiyonuna bu model parametre olarak gönderilecek. *@
+
+@{
+    string title = "Create New Product"; 
+    // Razor'da bir değişken tanımlanıp değeri atandıktan sonra bu değişken view içerisinde aşağıda herhangi bir yerde kullanılabilir.
+
+    ViewBag.Title = title;
+}
+
+<h1>@title</h1>
+<hr />
+
+
+
+@* HTML Form: *@
+@*<form action="/Products/Create" method="post" autocomplete="off" enctype="multipart/form-data">
+<!-- 
+    Bu formdaki verileri ProductsController'ın Create post action'ına gönderir. Get sunucudan veri almak, post ise sunucuya veri göndermek demektir.
+    Eğer action yazılmazsa default olarak form kendisine verileri gönderir.
+    Eğer method yazılmazsa default'u get'tir yani ProductsController'ın Create get action'ına veriler gönderilir.
+    Method get yapıldığında tarayıcının adresinde query string üzerinden veriler sunucuya gönderilir.
+    Örneğin ~/Products/Create?Name=Coffe&UnitPrice=15&StockAmount=100&CategoryId=1.
+    Veriler get methodu ile tarayıcının adresi üzerinden açık bir şekilde sunucuya gönderildiğinden kullanımı her zaman uygun değildir, 
+    bu yüzden genelde veriler post methodu üzerinden sunucuya gönderilir.
+-->
+    <div class="row mb-3">
+        <label for="name" class="col-2 col-form-label">Product Name</label>
+        <!-- for="name" HTML attribute'u aşağıdaki input'un id'si de name olduğu için sayfada label'a da tıklandığında input'un seçilmesini sağlar. -->
+        
+        <div class="col-5">
+            <input type="text" id="name" name="Name" class="form-control" />
+            <!-- name="Name" HTML attribute'u önemlidir çünkü controller action'ında string Name parametresi ile bu veri alınır. -->
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="description" class="col-2 col-form-label">Description</label>
+        <div class="col-5">
+            <textarea id="description" name="Description" class="form-control"></textarea>
+            <!-- name="Description" HTML attribute'u önemlidir çünkü controller action'ında string Description parametresi ile bu veri alınır. -->
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="unitprice" class="col-2 col-form-label">Unit Price</label>
+        <div class="col-5">
+            <input type="text" id="unitprice" name="UnitPrice" class="form-control" />
+            <!-- name="UnitPrice" HTML attribute'u önemlidir çünkü controller action'ında double UnitPrice parametresi ile bu veri alınır. -->
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="stockamount" class="col-2 col-form-label">Stock Amount</label>
+        <div class="col-5">
+            <input type="number" id="stockamount" name="StockAmount" class="form-control" />
+            <!-- name="StockAmount" HTML attribute'u önemlidir çünkü controller action'ında int StockAmount parametresi ile bu veri alınır. -->
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="expirationdate" class="col-2 col-form-label">Expiration Date</label>
+        <div class="col-5">
+            <input type="date" id="expirationdate" name="ExpirationDate" class="form-control datepicker" />
+            <!-- name="ExpirationDate" HTML attribute'u önemlidir çünkü controller action'ında DateTime? ExpirationDate parametresi ile bu veri alınır. -->
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="category" class="col-2 col-form-label">Category</label>
+        <div class="col-5">
+            <select id="category" name="CategoryId" class="form-select select2">
+                <option value="">-- Select --</option>
+                <option value="1">Computer</option>
+                <option value="2">Home Theater System</option>
+            </select>
+            <!-- name="CategoryId" HTML attribute'u önemlidir çünkü controller action'ında int? CategoryId parametresi ile seçilen option value üzerinden bu veri alınır. -->
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="stores" class="col-2 col-form-label">Stores</label>
+        <div class="col-5">
+            <select multiple id="stores" name="StoreIds" class="form-select select2">
+                <option value="1">Hepsiburada</option>
+                <option value="2">Vatan</option>
+            </select>
+            <!-- name="StoreIds" HTML attribute'u önemlidir çünkü controller action'ında List<int> StoreIds parametresi ile seçilen option value'lar üzerinden bu veri alınır. -->
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="image" class="col-2 col-form-label">Image</label>
+        <div class="col-5">
+            <input type="file" name="image" class="form-control" accept=".jpg, .jpeg, .png" id="image" />
+            <!-- name="image" HTML attribute'u önemlidir çünkü controller action'ında IFormFile? image parametresi ile yüklenen dosya binary verisi alınır. -->
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="offset-2 col-5"><!-- offset-2: yukarıdaki label'larda soldan 2 birim içerisinde başlıkları yazdırdığımızdan bu div içerisinde soldan 2 birim boşluk bırakılmasını sağlar. -->
+            <input type="submit" value="Save" class="btn btn-primary" /><!-- Formda mutlaka bir submit butonu olmalıdır ki form verileri sunucuya buton tıklandığında gönderilebilsin. -->
+            &nbsp;&nbsp;
+            <button type="reset" class="btn btn-outline-primary">Reset</button><!-- Reset butonu sayfayı ilk geldiği hale getirir. -->
+            &nbsp;&nbsp;
+            <a href="/Products/Index">Back to Product List</a>
+        </div>
+    </div>
+</form>*@
+
+
+
+@* HTML Helpers Form: *@
+@using (Html.BeginForm("Create", "Products", FormMethod.Post, new { autocomplete = "off", enctype = "multipart/form-data" }))
+@* 
+    autocomplete off: daha önce girilen form verilerinin tarayıcı cache'inden gelmesini engeller,
+    enctype multipart/form-data: form üzerinden herhangi bir file input ile binary verinin sunucuya gönderilmesini sağlar.
+    Eğer form methodu belirtilmezse default'u post'tur. Eğer action ve controller belirtilmezse default olarak view'ın dönüldüğü controller ve action'a veri gönderir.
+    form HTML tag'ini burada açar. Genelde Html.BeginForm methodu using ile kullanılır.
+*@
+{
+    @Html.AntiForgeryToken() 
+    @* 
+        Bu sayfa dışında başka biri tarafından oluşturulan bir sayfa veya istek üzerinden veri gönderilmesini (sahtekarlık) engellemek için kullanılır 
+        ve ilgili aksiyonda ValidateAntiForgeryToken attribute'u ile kontrol edilir. Token (jeton) temel olarak şifreli bir metinsel veridir.
+    *@
+
+    @*@if (ViewBag.Message is not null)
+    {
+        <p class="text-danger">@ViewBag.Message</p>
+    }*@
+    @* 
+        Create POST action'ında hatalı işlem sonucunda ViewBag.Message'ı atadık ve burada önce dolu mu diye kontrol ediyoruz, 
+        doluysa kırmızı renk stiline sahip bir p tag'i içerisine yazdırıyoruz. Bu view Create GET action'ı ile de dönecektir
+        ve bu action'da ViewBag.Message'ı atamadığımızdan null olacaktır, bu yüzden de p tag'ini yazdırmaya gerek yoktur.
+        ViewBag veya ViewData üzerinden hata mesajlarını view'a action'dan taşımak yerine view'da validation summary kullanarak
+        action'da da ModelState.AddModelError methodunu kullanmak kolaylık sağlar.
+    *@
+
+    @Html.ValidationSummary(false, null, new { @class = "text-danger" }) 
+    @* 
+        Model özellikleri üzerinde tanımlanmış attribute'lar (data annotation) üzerinden kullanıcının girdiği form verileri valide edilerek 
+        eğer validasyon hataları varsa özeti bu HTML Helper ile yazdırılabilir. İlk parametresi false gönderilmelidir ki özellik validasyon hatalarını kullanabilsin,
+        ikinci parametreyi null gönderiyoruz çünkü burada elle herhangi bir mesaj yazdırmak istemiyoruz ve üçüncü paramtere üzerinden de Bootstrap class'ı ile
+        yazı renginin kırmızı olmasını sağlıyoruz. ValidationSummary helper'ları hataları action'lardan view'a taşımak bakımından kolaylık sağlar.
+    *@
+
+    <div class="row mb-3">
+        @*@Html.Label("name", "Product Name", new { @class = "col-2 col-form-label"})*@ @* class CSS class'ını belirtir ve C#'ta anahtar kelime olduğundan @ ile escape'liyoruz. *@
+        @* Genelde HTML Helper'lar olarak Lambda Expression üzerinden view'daki modelin özelliklerinin kullanılmasını sağlayan For ile bitenler kullanılır. *@
+
+        @Html.LabelFor(model => model.Name, new { @class = "col-2 col-form-label"}) @* ProductModel'daki Name özelliğinin varsa DisplayName'ini (Product Name) yoksa kendi ismini (Name) yazdırır. *@
+
+        <div class="col-5">
+            @*@Html.TextBox("Name", null, new { @class = "form-control" })*@ @* null parametresi value'ya karşılık herhangi bir veri yazdırmayacağımız için kullanıldı. *@
+
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control" }) @* ProductModel'deki Name özelliği için type'ı text olan bir input oluşturur. *@
+
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "text-danger" }) @* Eğer istenirse validasyon hataları tek tek bu HTML Helper ile de gösterilebilir. *@
+        </div>
+    </div>
+    <div class="row mb-3">
+        @Html.LabelFor(model => model.Description, new { @class = "col-2 col-form-label"})
+        <div class="col-5">
+            @Html.TextAreaFor(model => model.Description, new { @class = "form-control" }) @* ProductModel'deki Description özelliği için bir textarea oluşturur. *@
+            @Html.ValidationMessageFor(model => model.Description, null, new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="row mb-3">
+        @Html.LabelFor(model => model.UnitPrice, new { @class = "col-2 col-form-label"})
+        <div class="col-5">
+            @Html.TextBoxFor(model => model.UnitPrice, new { @class = "form-control" }) 
+            @* 
+                ProductModel'deki UnitPrice özelliği için type'ı text olan bir input oluşturur. 
+                Kullanıcıdan veri alacağımız için sonu Display ile biten özellikler kullanılmamalıdır.
+            *@
+
+            @Html.ValidationMessageFor(model => model.UnitPrice, null, new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="row mb-3">
+        @Html.LabelFor(model => model.StockAmount, new { @class = "col-2 col-form-label"})
+        <div class="col-5">
+            @Html.TextBoxFor(model => model.StockAmount, new { @class = "form-control", type = "number" }) @* ProductModel'deki StockAmount özelliği için type'ı number olan bir input oluşturur. *@
+            @Html.ValidationMessageFor(model => model.StockAmount, null, new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="row mb-3">
+        @Html.LabelFor(model => model.ExpirationDate, new { @class = "col-2 col-form-label"})
+        <div class="col-5">
+            @Html.TextBoxFor(model => model.ExpirationDate, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker" }) @* ProductModel'deki ExpirationDate özelliği için type'ı text ve formatı ay/gün/yıl olan bir input oluşturur. *@
+        </div>
+    </div>
+    <div class="row mb-3">
+        @Html.LabelFor(model => model.CategoryId, new { @class = "col-2 col-form-label"})
+        <div class="col-5">
+            @Html.DropDownListFor(model => model.CategoryId, ViewBag.Categories as SelectList, "-- Select --", new { @class = "form-select select2" }) 
+            @* 
+                ProductModel'deki CategoryId özelliği için bir select oluşturur. 
+                İkinci parametre üzerinden action'da atanan ViewBag.Categories (ViewData["Categories"] de kullanılabilir) objesini new'lenen SelectList tipine dönüştür.
+                Üçüncü parametre üzerinden açılır listenin en başına select (seçiniz) option'ını ekle.
+                Dördüncü parametre üzerinden de Bootstrap form-select class'ını oluşturulacak select HTML tag'inin class'ı olarak kullan.
+            *@
+
+            @Html.ValidationMessageFor(model => model.CategoryId, null, new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="row mb-3">
+        @Html.LabelFor(model => model.StoreIds, new { @class = "col-2 col-form-label"})
+        <div class="col-5">
+            @Html.ListBoxFor(model => model.StoreIds, ViewBag.Stores as MultiSelectList, new { @class = "form-select select2" })
+            @*
+                ProductModel'deki StoreIds özelliği için bir multiple attribute'lu select oluşturur.
+                İkinci parametre üzerinden action'da atanan ViewBag.Stores (ViewData["Stores"] de kullanılabilir) objesini new'lenen MultiSelectList tipine dönüştür.
+                Üçüncü parametre üzerinden de Bootstrap form-select class'ını oluşturulacak multiple attribute'lu select HTML tag'inin class'ı olarak kullan.
+            *@
+
+            @Html.ValidationMessageFor(model => model.StoreIds, null, new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        @Html.LabelFor(model => model.Image, new { @class = "col-2 col-form-label"})
+        <div class="col-5">
+            <input type="file" name="image" class="form-control" accept="@AppSettings.AcceptedImageExtensions" />
+            <!-- name="image" HTML attribute'u önemlidir çünkü controller action'ında IFormFile? image parametresi ile yüklenen dosya binary verisi alınır. -->
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="offset-2 col-5"><!-- offset-2: yukarıdaki label'larda soldan 2 birim içerisinde başlıkları yazdırdığımızdan bu div içerisinde soldan 2 birim boşluk bırakılmasını sağlar. -->
+            
+            <button type="submit" class="btn btn-primary">Save</button><!-- Formda mutlaka bir submit butonu olmalıdır ki form verileri sunucuya buton tıklandığında gönderilebilsin. -->
+            &nbsp;&nbsp;
+            <input type="reset" value="Reset" class="btn btn-outline-primary" /><!-- Reset butonu sayfayı ilk geldiği hale getirir. -->
+            @* Butonlar için HTML Helper'lar bulunmamaktadır ancak eğer istenirse HTML Helper'ları kalıtım yoluyla yazılabilir. *@
+
+            &nbsp;&nbsp;
+
+            @Html.ActionLink("Back to Product List", "Index", "Products") 
+            @* 
+                Products controller'ının Index action'ına yönlendirme yapan link (a tag'i) oluşturur.
+                View, Products controller'ından geldiğini bildiği için controller parametresi gönderilmese de olur.
+            *@
+        </div>
+    </div>
+} @* form HTML tag'ini burada kapatır. *@
+@* Alternatif olarak using kullanmadan Html.BeginForm methodu kullanılabilir ancak bu durumda form HTML tag'inin kapanışı için Html.EndForm methodu kullanılmalıdır. *@
+
+@section Scripts {
+    @*
+        Bootstrap-Datepicker gibi Javascript - CSS kütüphaneleri wwwroot -> lib seçilip fare ile sağ tıklanarak Add -> Client-Side Library
+        tıklanıp örneğin Bootstrap-Datepicker için bootstrap-datepicker araması yapılıp çıkan sonuç seçilerek ve Bootstrap-Datepicker 
+        web sitesi (https://uxsolutions.github.io/bootstrap-datepicker) üzerinden hem kütüphane adı yazımı hem de versiyonu ile doğru kütüphane 
+        olduğu kontrol edilerek projeye eklenebilir.
+        Bootstrap-Datepicker kütüphanesi tüm view'larda kullanılmayacağı için _Layout view'ında eklemek yerine
+        sadece ürün ekleme ve güncelleme sayfalarında kullanılacağı Views -> Products -> Create ve Views -> Products -> Edit view'larında 
+        Scripts section'ına css ve js kütüphaneleri referansları eklenmelidir ve takvim text box'larını Bootstrap-Datepicker'a dönüştürecek 
+        jQuery kodları yazılmalıdır.
+        Yukarıdakilerin aynısı select2 (https://select2.org) Javascript - CSS kütüphanesi için de uygulanabilir.
+    *@
+    <link rel="stylesheet" href="/lib/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" />
+    <script src="/lib/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+    @*<script src="/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.tr.min.js"></script>*@ @* Türkçe takvim için *@
+
+    <link rel="stylesheet" href="/lib/select2/css/select2.min.css" />
+    <script src="/lib/select2/js/select2.min.js"></script>
+    @*<script src="/lib/select2/js/i18n/tr.min.js"></script>*@ @* Türkçe select2 için *@
+
+    <script>
+        $(function(){
+            $('.datepicker').datepicker({ // class'ı datepicker olan text box'ları datepicker'a dönüştür
+                todayBtn: "linked",
+                orientation: "top auto",
+                autoclose: true,
+                todayHighlight: true,
+                //language: "tr" // Türkçe takvim için
+            });
+
+            $(".select2").select2(); // class'ı select2 olan drop down list ve list box'ları select2'ye dönüştür
+        });
+    </script>
+}

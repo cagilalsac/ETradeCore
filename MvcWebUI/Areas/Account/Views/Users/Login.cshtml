@@ -1,0 +1,72 @@
+﻿@model AccountLoginModel
+@*Model namespace using directive should be added to _ViewImports.cshtml.*@
+
+@* 
+	Area'lar projenin Views klasörü altındaki _ViewImports ve _ViewStart view'larını kullanmamaktadır bu yüzden
+	projenin Views klasörü altındaki _ViewImports ve _ViewStart view'ları örneğin burada olduğu gibi Areas -> Account -> Views
+	altına kopyalanırsa bu area'daki view'ların bu _ViewImports ve _ViewStart view'larındaki kodları kullanmaları sağlanabilir.
+*@
+
+@{
+    ViewData["Title"] = "User Login";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<div class="row">
+    <div class="offset-4 col-8">
+        <form asp-action="Login">
+		@Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="row mb-3">
+                <label asp-for="UserName" class="col-2 col-form-label"></label>
+				<div class="col-4">
+					<input asp-for="UserName" class="form-control" />
+					<span asp-validation-for="UserName" class="text-danger"></span>
+				</div>
+            </div>
+            <div class="row mb-3">
+                <label asp-for="Password" class="col-2 col-form-label"></label>
+				<div class="col-4">
+
+					<input asp-for="Password" class="form-control" type="password" />
+					@* bu input'un type attribute'u password yapılmalıdır ki şifre kapalı bir şekilde girilebilsin *@
+
+					<span asp-validation-for="Password" class="text-danger"></span>
+				</div>
+            </div>
+
+			<input asp-for="ReturnUrl" type="hidden" />
+			@* 
+				Login get action'ı üzerinden atanan ReturnUrl'yi gizleyerek form'a koyuyoruz ki submit butonuna tıklandığında 
+				Login post action'ında ulaşıp kullanabilelim
+			*@
+
+            <div class="row mb-3">
+				<div class="offset-2 col-4">
+					<input type="submit" value="Login" class="btn btn-outline-success" />
+				</div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+	@* 
+		ASP.NET Core MVC'de iki çeşit validation vardır: 
+		1) Server-Side Validation: Yeni bir controller veya view eklenirken Reference script libraries işaretlenmezse view server side validation 
+		yapacak şekilde oluşturulur. Yani kullanıcı form üzerinden submit butonuna tıkladığında veriler sunucuya gönderilir ve ilgili action'da
+		ModelState.IsValid ile valide edilip validasyon hatası varsa model tekrar view'e gönderilerek view'da varsa validation summary
+		veya validation message Tag veya HTML Helper'ları üzerinden bu validasyon hataları gösterilir. Tarayıcının sayfa başlığının da bulunduğu tab'ında
+		sayfanın sunucudan tekrar gönderildiği başlığın yanındaki icon'ın değişimi üzerinden takip edilebilir, ayrıca tarayıcının refresh (tazeleme) 
+		butonunun çarpıya dönmesiyle de sayfanın sunucudan tekrar gönderildiği anlaşılabilir.
+		2) Client-Side Validation: Yeni bir controller veya view eklenirken Reference script libraries'in işaretlenmesiyle 
+		aşağıdaki Views -> Shared -> _ValidationScriptsPartial.cshtml partial view'ı ilgili view'a aşağıdaki şekilde eklenir, 
+		istenirse bu partial view sonradan da ilgili view'da bulunmuyorsa aşağıdaki şekilde eklenebilir. Bu partial view'in içerisindeki
+		Javascript referansları üzerinden tarayıcıda Javascript ile sunucuya veri gönderilmeden view'a gönderilen model üzerinden validation yapılır.
+	*@
+	<partial name="_ValidationScriptsPartial" />
+}
+
+
+

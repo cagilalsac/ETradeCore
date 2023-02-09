@@ -1,0 +1,10 @@
+﻿@{
+    ViewData["Title"] = "Welcome";
+
+    string message = User.Identity.IsAuthenticated ? $"Welcome {User.Identity.Name}." : "Welcome.";
+    @* Razor'da bir kod bloğu içerisinde bir değişken atanıp aşağıda istenilen yerde bu değişkenin atanan verisi yazdırılabilir *@
+}
+
+<h1>@AppSettings.Title</h1>
+<hr />
+<p>@message</p>

@@ -1,0 +1,18 @@
+﻿@model string
+@* Örnek: "Product not found!" *@
+
+@*
+    Projedeki tüm controller ve view'lar üzerinden paylaşılarak kullanılabilmesi için
+    bu view ~/Views/Shared klasörü altında oluşturulmalıdır.
+*@
+
+<h2 class="text-danger">Error!</h2>
+
+@if (string.IsNullOrWhiteSpace(Model)) // eğer string tipindeki view'ın modeli null veya "" ise
+{
+    <p class="text-danger">An error occurred!</p> // genel hata mesajı gösterilir
+}
+else
+{
+    <p class="text-danger">@Model</p> // view'a string tipinden taşınan hata mesajı gösterilir
+}

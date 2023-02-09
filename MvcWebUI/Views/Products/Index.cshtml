@@ -1,0 +1,266 @@
+﻿@* View'larda kullanılan Razor, C# ile birlikte HTML kullanmamızı sağlar. *@
+
+@* Razor comment (yorum) syntax'i *@
+
+@* 1. yöntem: *@
+@*@model List<Business.Models.ProductModel> *@
+@* 
+    Products Controller'ının Index action'ında listeyi List<ProductModel> olarak çektiğimiz ve bu view'da model objesi olarak kullanacağımız
+    için tipini bu satırdaki şekilde namespace'i üzerinden belirtiyoruz. 
+*@
+
+@* 2. yöntem: *@
+@*@model List<ProductModel>*@
+@*
+    View'da kullanacağımız model objesinin tipini namespace olmadan belirtebilmek için Views klasörü altındaki _ViewImports.cshtml'de using ile 
+    ProductModel class'ının namespace'ini eklememiz gerekmektedir, bu şekilde kullanım tercih edilmelidir.
+*@
+
+@* 3. yöntem: *@
+@model IEnumerable<ProductModel>
+@* Razor'ın bu syntax'inde @'ten sonra C# kodu yazılır ve ; ile sonlandırılmaz. Herhangi bir boşluk (boşluk veya enter (return) karakteri) kullanıldığında C# kod yazımı sona erer. *@
+@*
+    Model objesinin tipi için kolleksiyonlarda IEnumerable kullanmak daha uygundur, bu şekilde model class'larındaki özelliklerin DisplayName attribute'larına
+    (data annotation) ulaşılıp view'da kullanılabilir.
+*@
+
+@{
+    // Razor'ın bu syntax'inde süslü parantez içerisine C# kodları ; ile sonlandırılarak yazılabilir.
+    ViewData["Title"] = "Products"; // ViewData ile ViewBag controller action'larından view'lara veya view'ler arası veri taşımak için kullanılır.
+                                    // ViewBag ile ViewData yapı olarak aynıdır dolayısıyla birbirlerinin yerine kullanılabilir, sadece kullanımları 
+                                    // aşağıda olduğu gibi farklıdır. Title anahtar değeri ViewData kolleksiyonunda ulaşacağımız verinin (Products) string olarak index'ini,
+                                    // aynı zamanda ViewBag dinamik objesi üzerinden kullanırsak veriye (Products) ulaşacağımız özellik adını belirtir.
+    
+    //Layout = "_MyLayout"; // İstenilen layout oluşturulup burada atanarak bu view'ın kullanması sağlanabilir.
+}
+
+@* Aşağıda ister ViewBag ister ViewData kullanılabilir. h4 HTML tag'i içerisine Title için yukarıda atadığımız değeri yani Products'ı yazdırır. *@
+@*<h4>@ViewData["Title"]</h4>*@
+<h1>@ViewBag.Title</h1>
+<hr />
+
+<p>
+    @if (User.IsInRole("Admin")) // eğer kullanıcı Admin rolündeyse Create link'i gösterilsin
+    {
+        <i class="bi bi-plus-lg"></i> 
+        @Html.ActionLink("Create New Product", "Create", "Products") 
+        @* 
+            Products controller'ının Create GET action'ına yönlendiren link, 
+            controller (Products) parametresi yazılmaza da olur çünkü hangi controller'dan döndüğünü view biliyor. 
+        *@
+    }
+</p>
+
+@if (TempData["Message"] is not null)
+{
+    <p class="text-danger">@TempData["Message"]</p>
+}
+@*
+    Create ve Delete POST action'larında hatalı veya başarılı işlem sonucunda TempData["Message"]'ı atadık ve burada önce dolu mu diye kontrol ediyoruz,
+    doluysa kırmızı renk stiline sahip bir p tag'i içerisine yazdırıyoruz. Bu view Index GET action'ı ile de dönecektir
+    ve bu action'da TempData["Message"]'ı atamadığımızdan null olacaktır, bu yüzden de p tag'ini yazdırmaya gerek yoktur.
+*@
+
+<table id="products" class="display" style="width: 100%;">
+    <thead>
+        <!-- Sütun başlıkları -->
+        <tr>
+            <th>
+                @*Name*@
+                @Html.DisplayNameFor(model => model.Name)
+                @* 
+                    Burada Name'i elle yazmak yerine model tipimiz olan ProductModel'in Name özelliğinin DisplayName attribute'u (data annotation) ile belirttiğimiz değeri kullanmalıyız. 
+                    DisplayNameFor HTML Helper methodu ile Lambda Expression kullanarak bu sayfanın model tipi (ProductModel) üzerinden Name özelliğini kullanarak 
+                    bunun DisplayName'ini göster dedik.
+                *@
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnitPriceDisplay) 
+                @* 
+                    double olan UnitPrice'ı değil servisin Query methodunda formatladığımız string olan UnitPriceDisplay'i 
+                    kullanmak daha uygundur. 
+                *@
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StockAmount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ExpirationDateDisplay) (Year/Month/Day) @* Bu kullanımda herhangi bir boşluktan sonra Razor C# yazımı sona erer. *@
+                @*
+                    DateTime olan ExpirationDate'i değil servisin Query methodunda formatladığımız string olan ExpirationDateDisplay'i
+                    kullanmak daha uygundur.
+                *@
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CategoryNameDisplay)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StoreNamesDisplay)
+            </th>
+
+            <th style="width: 12%"><!-- ürün imajı önizlemesi için sütun genişliğini ayarlıyoruz -->
+                @Html.DisplayNameFor(model => model.Image) @* ProductModel'deki imaj özelliğinin DisplayName'ini kullanıyoruz *@
+            </th>
+
+            <th></th><!-- boş bir sütun oluşturduk ki aşağıda her bir ürün için Details, Edit ve Delete link'lerini içerisine koyabilelim -->
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Veri satırları -->
+        @foreach (var product in Model) // ürün listemiz olan Model objemiz üzerinden her bir ürüne ulaşıyoruz ve her bir ürün için yeni bir HTML satırı ile 
+                                        // içerisindeki HTML sütunları üzerinden ürün verilerini gösteriyoruz.
+        {
+            <tr>
+                <td>
+                    @* 1. yöntem: direkt döngüdeki eleman üzerinden gösterim *@
+                    @*@product.Name*@
+
+                    @* 2. yöntem: döngüdeki eleman üzerinden DisplayFor HTML Helper'ı üzerinden gösterim *@
+                    @Html.DisplayFor(model => product.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => product.UnitPriceDisplay)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => product.StockAmount)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => product.ExpirationDateDisplay)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => product.CategoryNameDisplay)
+                </td>
+                <td>
+                    @Html.Raw(product.StoreNamesDisplay) @* eğer gösterilmek istenen verinin içerisinde HTML varsa ki burada <br /> var, Html.Raw Helper'ı kullanılmalıdır *@
+                </td>
+
+                <td>
+                    @if (product.ImgSrcDisplay != null) // ürünün imajı varsa
+                    {
+                        <img src="@product.ImgSrcDisplay" class="img-thumbnail" />
+                        @* Bootstrap 5 img-thumbnail class'ı ile imaj önizlemesini yazdırıyoruz *@
+                    }
+                    else
+                    {
+                        <i class="bi bi-image fs-2" title="No Image"></i>
+                        @* Bootstrap icon'u kullanarak ürünün imajı olmadığını gösteriyoruz, fs-2: font size 2 birim *@
+                    }
+                </td>
+
+                <td style="text-align: right;"><!-- td içerisindeki elemanları sağa hizala -->
+                    @if (User.Identity.IsAuthenticated)// eğer kullanıcı giriş yaptıysa Details link'i mutlaka gösterilsin
+                    {
+                        <i class="bi bi-info-circle"></i> 
+                        @Html.ActionLink("Details", "Details", new { id = product.Id })
+                        @* 
+                            Products controller'ının Details action'ına id parametresini göndermemiz gerekiyor ki id üzerinden tek bir ürün kaydına ulaşılabilsin, 
+                            id'yi gönderebilmek için ActionLink HTML Helper'ın son parametresi olarak bir route value anonymous (herhangi bir tipi mesela class'ı olmayan) objesi oluşturduk
+                            ve Details action'ının ihtiyacı olan id parametresini elle özellik olarak tanımladık (id) ve döngünün her bir turundaki ürün id (product.Id) değerini atadık.
+                        *@
+
+                        @if (User.IsInRole("Admin")) // eğer kullanıcı Admin rolündeyse Edit ve Delete link'leri de gösterilsin
+                        {
+                            @:&nbsp;
+                            <text>|&nbsp;</text>  
+                            @* Burada C# kodu yazmamız beklendiği için &nbsp; hata verir dolayısıyla Razor escape işlemleri için ya @: ya da <text> tag'i kullanılır. *@
+                            
+                            <i class="bi bi-pencil-square"></i> 
+                            @Html.ActionLink("Edit", "Edit", new { id = product.Id })
+                            @*
+                                Products controller'ının Edit action'ına id parametresini göndermemiz gerekiyor ki id üzerinden tek bir ürün kaydına ulaşılabilsin,
+                                id'yi gönderebilmek için ActionLink HTML Helper'ın son parametresi olarak bir route value anonymous objesi oluşturduk
+                                ve Edit action'ının ihtiyacı olan id parametresini elle özellik olarak tanımladık (id) ve döngünün her bir turundaki ürün id (product.Id) değerini atadık.
+                            *@
+
+                            @:&nbsp;|&nbsp;
+
+                            <i class="bi bi-trash"></i> 
+                            @Html.ActionLink("Delete", "Delete", new { id = product.Id })
+                            @*
+                                Products controller'ının Delete action'ına id parametresini göndermemiz gerekiyor ki id üzerinden tek bir ürün kaydına ulaşılabilsin,
+                                id'yi gönderebilmek için ActionLink HTML Helper'ın son parametresi olarak bir route value anonymous objesi oluşturduk
+                                ve Delete action'ının ihtiyacı olan id parametresini elle özellik olarak tanımladık (id) ve döngünün her bir turundaki ürün id (product.Id) değerini atadık.
+                            *@
+                        }
+                        else
+                        {
+                            @:&nbsp;|&nbsp;
+                            <i class="bi bi-cart-plus"></i>
+                            @Html.ActionLink("Add to Cart", "AddToCart", "Home", new { productId = product.Id, area = "Cart" })
+                            @*
+                                Cart area'sındaki Home controller'ının AddToCart action'ına ürünün id'sini (productId) route value,
+                                area'yı da Cart olarak belirterek link'i oluşturuyoruz
+                            *@
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    @* 
+        DataTables gibi Javascript - CSS kütüphaneleri wwwroot -> lib seçilip fare ile sağ tıklanarak Add -> Client-Side Library
+        tıklanıp örneğin DataTables için datatables araması yapılıp çıkan sonuç seçilerek ve DataTables web sitesi (https://datatables.net) 
+        üzerinden hem kütüphane adı yazımı hem de versiyonu ile doğru kütüphane olduğu kontrol edilerek projeye eklenebilir.
+        DataTables kütüphanesi tüm view'larda kullanılmayacağı için _Layout view'ında eklemek yerine
+        sadece ürün listeleme sayfasında kullanılacağı Views -> Products -> Index view'ında Scripts section'ına
+        css ve js kütüphaneleri referansları eklenmelidir ve HTML table'ı DataTable'a dönüştürecek jQuery kodları yazılmalıdır.
+    *@
+    <link rel="stylesheet" href="/lib/datatables/css/jquery.dataTables.min.css" /><!-- / ile kök klasör olan wwwroot'a göre ihtiyaç duyulan dosya tanımlanabilir. -->
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script><!-- ~/ ile de kök klasör olan wwwroot'a göre ihtiyaç duyulan dosya tanımlanabilir. -->
+    <script>
+        $(function() { // jQuery fonksiyonu: sayfa yüklendikten sonra
+            $("#products").DataTable({ // id'si products olan table'ı data table'a dönüştür
+                language: {
+                    // Eğer data table Türkçe olarak kullanılmak isteniyorsa wwwroot -> json klasörü altına datatablesTurkish.json dosyası kopyalanmalıdır.
+                    // Eğer kullanılan metinsel bir dosyada (JSON ve XML de metinsel dosyalardır) Türkçe karakter sorunu varsa dosya Notepad ile açılıp 
+                    // kodlama (encoding) UTF-8'e değiştirilerek kaydedilmelidir.
+                    
+                    //url: "/json/datatablesTurkish.json" // uygulamamız İngilizce olduğu için bu kısmı comment'e aldık
+                }
+            });
+        });
+        /*
+        alternatif olarak sayfa yüklendikten sonra aşağıdaki şekilde de istenilen kodlar çalıştırılabilir
+        $(document).ready(function() {
+            $("#products").DataTable({
+                language: {
+                    url: "/json/datatablesTurkish.json"
+                }
+            });
+        });
+        */
+    </script>
+}
+
+
+
+@*
+    ASP.NET Core MVC'deki Genel Kullanılan HTML Helper'lar:
+    Html.TextBox
+    Html.TextBoxFor
+    Html.Password
+    Html.PasswordFor
+    Html.TextArea
+    Html.TextAreaFor
+    Html.CheckBox
+    Html.CheckBoxFor
+    Html.RadioButton
+    Html.RadioButtonFor
+    Html.DropDownList
+    Html.DropDownListFor
+    Html.ListBox
+    Html.ListBoxFor
+    Html.Hidden
+    Html.HiddenFor
+    Html.Editor
+    Html.EditorFor
+    Html.Display
+    Html.DisplayFor
+    Html.Label
+    Html.LabelFor
+    Html.ActionLink
+    Html.BeginForm (isteğe göre using ile isteğe göre de using kullanılmadan Html.EndForm ile birlikte kullanılabilir)
+*@

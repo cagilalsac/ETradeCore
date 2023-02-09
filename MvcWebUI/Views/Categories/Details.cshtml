@@ -1,0 +1,50 @@
+﻿@model CategoryModel
+@*Model namespace using directive should be added to _ViewImports.cshtml.*@
+
+@{
+    ViewData["Title"] = "Category Details";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<div>
+    <h4>Category</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class="col-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class="col-2">
+            @Html.DisplayNameFor(model => model.ProductsCount)
+        </dt>
+        <dd class="col-10">
+            @Html.DisplayFor(model => model.ProductsCount)
+        </dd>
+    </dl>
+</div>
+<div>
+    @if (User.IsInRole("Admin")) // eğer kullanıcı Admin rolündeyse Edit link'i gösterilsin
+    {
+        <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
+        <text>&nbsp;|&nbsp;</text>
+        @* <text>: Razor escape tag *@
+        <!-- 
+            view model objesinin Id'sini asp-route-id'ye atıyoruz ki bu id üzerinden bu ürünün düzenleme sayfasına (id parametreli Edit action'ı üzerinden) ulaşabilelim. 
+            Model objesinin null gelebilme ihtimali için sonunda ? kullanılmıştır, eğer null gelirse Id özelliğini kullanmadan bir işlem yapma, 
+            null gelmezse de model objesinin Id özelliğini kullan.
+        -->
+    }
+    <a asp-action="Index">Back to Category List</a>
+</div>
+
+
+

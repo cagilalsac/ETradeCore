@@ -1,0 +1,68 @@
+﻿@model ProductModel
+
+<h4>Product</h4>
+<hr />
+<dl class="row"><!-- Genelde solda başlık sağda veri yapısı şekilnde detay kayıtlarının gösterimi için dl HTML tag'i içerisinde başlık için dt, veri içinse dd HTML tag'leri kullanılır. -->
+    <dt class="col-2"><!-- Bootstrap class'ı: 2 birim başlık için kullan. -->
+        @Html.DisplayNameFor(model => model.Name)<!-- DisplayNameFor HTML Helper'ı yerine label asp-for Tag Helper'ı kullanılabilir. -->
+    </dt>
+    <dd class="col-10"><!-- Bootstrap class'ı: 10 birim veri için kullan. -->
+        @Html.DisplayFor(model => model.Name)<!-- DisplayFor HTML Helper'ı yerine bir Tag Helper bulunmamaktadır ancak istenirse Tag Helper'ı kalıtım yoluyla yazılabilir. -->
+    </dd>
+    <dt class="col-2">
+        @Html.DisplayNameFor(model => model.Description)
+    </dt>
+    <dd class="col-10">
+        @Html.DisplayFor(model => model.Description)
+    </dd>
+    <dt class="col-2">
+        @Html.DisplayNameFor(model => model.UnitPriceDisplay)
+    </dt>
+    <dd class="col-10">
+        $@Html.DisplayFor(model => model.UnitPriceDisplay)
+    </dd>
+    <dt class="col-2">
+        @Html.DisplayNameFor(model => model.StockAmount)
+    </dt>
+    <dd class="col-10">
+        @Html.DisplayFor(model => model.StockAmount)
+    </dd>
+    <dt class="col-2">
+        @Html.DisplayNameFor(model => model.ExpirationDateDisplay) (Year/Month/Day)
+        @* 
+            Eğer istenirse herhangi bir metin veya HTML içerik @ ile Razor kullanıldıktan sonra boşluk bırakılarak veya 
+            alt satıra geçilerek view'a yazdırılabilir. 
+        *@
+    </dt>
+    <dd class="col-10">
+        @Html.DisplayFor(model => model.ExpirationDateDisplay)
+    </dd>
+    <dt class="col-2">
+        @Html.DisplayNameFor(model => model.CategoryNameDisplay)
+    </dt>
+    <dd class="col-10">
+        @Html.DisplayFor(model => model.CategoryNameDisplay)
+    </dd>
+    <dt class="col-2">
+        @Html.DisplayNameFor(model => model.StoreNamesDisplay)
+    </dt>
+    <dd class="col-10">
+        @Html.Raw(Model.StoreNamesDisplay) @* eğer gösterilmek istenen verinin içerisinde HTML varsa ki burada <br /> var, Html.Raw Helper'ı kullanılmalıdır *@
+    </dd>
+
+    <dt class="col-2">
+        @Html.DisplayNameFor(model => model.Image)
+    </dt>
+    <dd class="col-4"><!-- aşağıda gösterilecek imajların genişlikleri col birimi değiştirilerek ayarlanabilir -->
+        @if (Model.ImgSrcDisplay != null)
+        {
+            <img src="@Model.ImgSrcDisplay" class="img-fluid" />
+            @* Bootstrap 5 img-fluid class'ı ile imaj'ı col-4 ile genişliğini belirttiğimiz dd'yi dolduracak şekilde yazdırıyoruz *@
+        }
+        else
+        {
+            <i class="bi bi-image fs-1" title="No Image"></i>
+            @* Bootstrap icon'u kullanarak ürünün imajı olmadığını gösteriyoruz, fs-1: font size 1 birim *@
+        }
+    </dd>
+</dl>
